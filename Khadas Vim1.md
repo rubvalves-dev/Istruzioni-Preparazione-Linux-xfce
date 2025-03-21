@@ -127,6 +127,58 @@ Follow the standard Linux configuration steps from the main README for:
 - Assicurarsi che l'utente specificato esista nel sistema
 - La configurazione dell'autologin dovrebbe essere eseguita prima della configurazione dell'avvio automatico del browser
 
+## Configurazione VNC Server
+
+### Installazione TigerVNC
+1. Aggiornare i repository e installare TigerVNC:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install tigervnc-standalone-server tigervnc-common
+   ```
+
+### Configurazione Iniziale
+1. Avviare TigerVNC per la prima volta:
+   ```bash
+   vncserver
+   ```
+   - Impostare una password quando richiesto
+   - Annotare il numero del display (es. :1)
+
+2. Arrestare il server VNC:
+   ```bash
+   vncserver -kill :1
+   ```
+
+### Configurazione dell'Ambiente Grafico
+1. Creare/modificare il file di configurazione xstartup:
+   ```bash
+   nano ~/.vnc/xstartup
+   ```
+
+2. Inserire il seguente contenuto:
+   ```bash
+   #!/bin/sh
+   xrdb $HOME/.Xresources
+   startxfce4 &
+   ```
+
+3. Rendere eseguibile il file xstartup:
+   ```bash
+   chmod +x ~/.vnc/xstartup
+   ```
+
+### Avvio del Server
+1. Avviare il server VNC:
+   ```bash
+   vncserver :1
+   ```
+
+### Note Importanti
+- La porta VNC predefinita è 5901 per il display :1
+- Per accedere da remoto: `indirizzo-ip:5901`
+- Per maggiore sicurezza, considerare l'uso di SSH tunneling
+- Sostituire `:1` con il numero di display desiderato
+
 ## References
 - [Official Khadas Documentation](https://docs.khadas.com/products/sbc/vim1/install-os/install-os-into-emmc-via-usb-tool)
 - [Khadas Download Center](https://dl.khadas.com/)
