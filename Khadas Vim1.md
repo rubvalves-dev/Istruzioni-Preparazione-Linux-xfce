@@ -138,6 +138,11 @@ Follow the standard Linux configuration steps from the main README for:
 
 2. Configurare x11vnc:
    ```bash
+   # Creare la directory .vnc e impostare la password
+   mkdir -p ~/.vnc
+   x11vnc -storepasswd /home/khadas/.vnc/passwd
+
+   # Avviare x11vnc
    x11vnc -display :0 -auth /var/run/lightdm/root/:0
    ```
 
