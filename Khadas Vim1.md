@@ -129,55 +129,69 @@ Follow the standard Linux configuration steps from the main README for:
 
 ## Configurazione VNC Server
 
-### Installazione TigerVNC
-1. Aggiornare i repository e installare TigerVNC:
+### Installazione x11vnc
+1. Aggiornare i repository e installare x11vnc:
    ```bash
-   sudo apt-get update
-   sudo apt-get install tigervnc-standalone-server tigervnc-common
+   sudo apt update
+   sudo apt install x11vnc
    ```
 
-### Configurazione Iniziale
-1. Avviare TigerVNC per la prima volta:
+2. Configurare x11vnc:
    ```bash
-   vncserver
-   ```
-   - Impostare una password quando richiesto
-   - Annotare il numero del display (es. :1)
-
-2. Arrestare il server VNC:
-   ```bash
-   vncserver -kill :1
+   x11vnc -display :0 -auth /var/run/lightdm/root/:0
    ```
 
-### Configurazione dell'Ambiente Grafico
-1. Creare/modificare il file di configurazione xstartup:
+3. Configurare il firewall:
    ```bash
-   nano ~/.vnc/xstartup
+   sudo ufw allow 5900/tcp
+   ```
+
+### Configurazione del Servizio
+1. Creare il file di servizio systemd:
+   ```bash
+   sudo nano /etc/systemd/system/x11vnc.service
    ```
 
 2. Inserire il seguente contenuto:
-   ```bash
-   #!/bin/sh
-   xrdb $HOME/.Xresources
-   startxfce4 &
+   ```ini
+   [Unit]
+   Description=Start x11vnc at startup
+   After=multi-user.target
+
+   [Service]
+   Type=simple
+   ExecStart=/usr/bin/x11vnc -auth guess -forever -loop -noxdamage -repeat -rfbauth /home/khadas/.vnc/passwd -rfbport 5900 -shared -o /var/log/x11vnc.log
+
+   [Install]
+   WantedBy=multi-user.target
    ```
 
-3. Rendere eseguibile il file xstartup:
+### Attivazione del Servizio
+1. Ricaricare la configurazione di systemd:
    ```bash
-   chmod +x ~/.vnc/xstartup
+   sudo systemctl daemon-reload
    ```
 
-### Avvio del Server
-1. Avviare il server VNC:
+2. Abilitare il servizio per l'avvio automatico:
    ```bash
-   vncserver :1
+   sudo systemctl enable x11vnc.service
+   ```
+
+3. Avviare il servizio:
+   ```bash
+   sudo systemctl start x11vnc.service
+   ```
+
+4. Verificare lo stato del servizio:
+   ```bash
+   sudo systemctl status x11vnc.service
    ```
 
 ### Note Importanti
-- La porta VNC predefinita è 5901 per il display :1
-- Per accedere da remoto: `indirizzo-ip:5901`
-- Per maggiore sicurezza, considerare l'uso di SSH tunneling
-- Sostituire `:1` con il numero di display desiderato
+- Assicurarsi di sostituire `/home/khadas/.vnc/passwd` con il percorso corretto del file password
+- Il servizio verrà avviato automaticamente al riavvio del sistema
+- La porta predefinita per la connessione VNC è 5900
+- Per accedere da remoto utilizzare: `indirizzo-ip:5900`
 
 ## References
 - [Official Khadas Documentation](https://docs.khadas.com/products/sbc/vim1/install-os/install-os-into-emmc-via-usb-tool)
