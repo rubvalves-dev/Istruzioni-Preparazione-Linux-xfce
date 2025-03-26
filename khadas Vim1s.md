@@ -42,6 +42,29 @@ Follow the standard Linux configuration steps from the main README for:
 - Network configuration
 - User setup
 
+### Installazione Brave Browser
+
+1. Installare le dipendenze necessarie:
+   ```bash
+   sudo apt install curl apt-transport-https
+   ```
+
+2. Importare la chiave GPG:
+   ```bash
+   sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+   ```
+
+3. Aggiungere il repository Brave:
+   ```bash
+   echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+   ```
+
+4. Aggiornare e installare Brave Browser:
+   ```bash
+   sudo apt update
+   sudo apt install brave-browser
+   ```
+
 ## Configurazione Avvio Automatico Browser
 
 ### Creazione Script di Avvio
@@ -53,7 +76,7 @@ Follow the standard Linux configuration steps from the main README for:
 2. Aggiungere il seguente contenuto allo script:
    ```bash
    #!/bin/bash
-   chromium-browser --start-maximized --kiosk http://indirizzo-desiderato.com
+   brave-browser --start-maximized --kiosk http://indirizzo-desiderato.com
    ```
 
 3. Rendere lo script eseguibile:
@@ -82,7 +105,7 @@ Follow the standard Linux configuration steps from the main README for:
    X-GNOME-Autostart-enabled=true
    Name[en_US]=Start Browser
    Name=Start Browser
-   Comment=Avvia il browser in modalità kiosk
+   Comment=Avvia Brave Browser in modalità kiosk
    ```
 
 4. Salvare il file e impostare i permessi:
@@ -165,10 +188,8 @@ Follow the standard Linux configuration steps from the main README for:
 
    [Service]
    Type=simple
-   Environment=HOME=/home/khadas
-   ExecStart=/usr/bin/x0vncserver -display :0 -passwordfile /home/khadas/.vnc/passwd -localhost no -Log *:stderr:100
+   ExecStart=/usr/bin/x0vncserver -display :0 -passwordfile /home/khadas/.vnc/passwd -localhost no
    Restart=on-failure
-   RemainAfterExit=yes
 
    [Install]
    WantedBy=multi-user.target
@@ -194,6 +215,50 @@ Follow the standard Linux configuration steps from the main README for:
 1. Controllare lo stato del servizio:
    ```bash
    sudo systemctl status x0vncserver.service
+   ```
+
+### Configurazione Privilegi Sudo per VNC
+
+1. Aprire il file di configurazione di sudo:
+   ```bash
+   sudo visudo
+   ```
+
+2. Aggiungere la seguente riga alla fine del file:
+   ```
+   khadas ALL=(ALL) NOPASSWD: /bin/systemctl start x0vncserver.service
+   ```
+
+3. Salvare il file e uscire (in visudo, premere CTRL+O per salvare e CTRL+X per uscire)
+
+4. Testare il comando senza password:
+   ```bash
+   sudo systemctl start x0vncserver.service
+   ```
+
+### Avvio Automatico del Servizio VNC all'Accesso
+
+1. Aggiungere il comando al file .profile dell'utente:
+   ```bash
+   echo "sudo systemctl start x0vncserver.service" >> ~/.profile
+   ```
+
+2. In alternativa, aggiungere un comando di avvio a ~/.config/autostart:
+   ```bash
+   cat << 'EOF' > ~/.config/autostart/start_vnc.desktop
+   [Desktop Entry]
+   Type=Application
+   Name=Start VNC Service
+   Exec=sudo systemctl start x0vncserver.service
+   Terminal=false
+   NoDisplay=true
+   X-GNOME-Autostart-enabled=true
+   EOF
+   ```
+
+3. Rendere il file eseguibile:
+   ```bash
+   chmod +x ~/.config/autostart/start_vnc.desktop
    ```
 
 ### Note Importanti
