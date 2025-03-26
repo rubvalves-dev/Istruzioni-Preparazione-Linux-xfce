@@ -165,8 +165,10 @@ Follow the standard Linux configuration steps from the main README for:
 
    [Service]
    Type=simple
-   ExecStart=/usr/bin/x0vncserver -display :0 -passwordfile /home/khadas/.vnc/passwd -localhost no
+   Environment=HOME=/home/khadas
+   ExecStart=/usr/bin/x0vncserver -display :0 -passwordfile /home/khadas/.vnc/passwd -localhost no -Log *:stderr:100
    Restart=on-failure
+   RemainAfterExit=yes
 
    [Install]
    WantedBy=multi-user.target
