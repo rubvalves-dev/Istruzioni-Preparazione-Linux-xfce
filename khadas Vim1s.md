@@ -44,26 +44,7 @@ Follow the standard Linux configuration steps from the main README for:
 
 ### Installazione Brave Browser
 
-1. Installare le dipendenze necessarie:
-   ```bash
-   sudo apt install curl apt-transport-https
-   ```
-
-2. Importare la chiave GPG:
-   ```bash
-   sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-   ```
-
-3. Aggiungere il repository Brave:
-   ```bash
-   echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-   ```
-
-4. Aggiornare e installare Brave Browser:
-   ```bash
-   sudo apt update
-   sudo apt install brave-browser
-   ```
+1. Follow instructions at: https://brave.com/linux/
 
 ## Configurazione Avvio Automatico Browser
 
@@ -76,6 +57,12 @@ Follow the standard Linux configuration steps from the main README for:
 2. Aggiungere il seguente contenuto allo script:
    ```bash
    #!/bin/bash
+   rm -r ~/.config/BraveSoftware/Brave-Browser/Default/Sessions
+   rm -r ~/.config/BraveSoftware/Brave-Browser/Default/Session\ Storage
+   rm ~/.config/BraveSoftware/Brave-Browser/Default/Session\ Restore
+   rm ~/.config/BraveSoftware/Brave-Browser/Default/Last\ Session
+   rm ~/.config/BraveSoftware/Brave-Browser/Default/Last\ Tabs
+
    brave-browser --start-maximized --kiosk http://indirizzo-desiderato.com
    ```
 
